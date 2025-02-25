@@ -151,3 +151,4 @@ checklink/cookies.txt
 .experiments
 dev_nbs/**/wandb/
 dump.json
+outputs/
