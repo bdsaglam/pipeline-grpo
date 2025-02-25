@@ -13,8 +13,6 @@ dependencies = [
     "python-dotenv>=1.0.1",
     "trl>=0.15.1",
     "typer>=0.15.1",
-    "unsloth>=2025.2.15",
-    "vllm>=0.7.3",
     "wandb>=0.19.7",
 ]
 
