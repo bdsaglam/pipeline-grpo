@@ -90,7 +90,7 @@ def int_reward_func(completions, **kwargs) -> list[float]:
 
 def strict_format_reward_func(completions, **kwargs) -> list[float]:
     """Reward function that checks if the completion has a specific format."""
-    pattern = r"^<reasoning>\n.*?\n</reasoning>\n<answer>\n.*?\n</answer>\n$"
+    pattern = r"^<think>\n.*?\n</think>\n<answer>\n.*?\n</answer>\n$"
     responses = [completion[0]["content"] for completion in completions]
     matches = [re.match(pattern, r, flags=re.DOTALL) for r in responses]
     return [0.5 if match else 0.0 for match in matches]
@@ -98,7 +98,7 @@ def strict_format_reward_func(completions, **kwargs) -> list[float]:
 
 def soft_format_reward_func(completions, **kwargs) -> list[float]:
     """Reward function that checks if the completion has a specific format."""
-    pattern = r"<reasoning>.*?</reasoning>\s*<answer>.*?</answer>"
+    pattern = r"<think>.*?</think>\s*<answer>.*?</answer>"
     responses = [completion[0]["content"] for completion in completions]
     matches = [re.match(pattern, r, flags=re.DOTALL) for r in responses]
     return [0.5 if match else 0.0 for match in matches]
@@ -106,9 +106,9 @@ def soft_format_reward_func(completions, **kwargs) -> list[float]:
 
 def count_xml(text) -> float:
     count = 0.0
-    if text.count("<reasoning>\n") == 1:
+    if text.count("<think>\n") == 1:
         count += 0.125
-    if text.count("\n</reasoning>\n") == 1:
+    if text.count("\n</think>\n") == 1:
         count += 0.125
     if text.count("\n<answer>\n") == 1:
         count += 0.125
@@ -151,10 +151,10 @@ def train(
     dataset_split: str = "train",
     max_prompt_length: int = typer.Option(256, "-pl"),
     max_completion_length: int = typer.Option(1024, "-cl"),
-    batch_size: int = typer.Option(8, "-bs"),
     num_generations: int = typer.Option(4, "-g"),
-    learning_rate: float = typer.Option(5e-6, "-lr"),
+    batch_size: int = typer.Option(8, "-bs"),
     gradient_accumulation_steps: int = typer.Option(4, "-gacc"),
+    learning_rate: float = typer.Option(5e-6, "-lr"),
     use_vllm: bool = False,
     vllm_gpu_memory_utilization: float = typer.Option(0.7, "-vmu"),
     flash_attn: bool = False,

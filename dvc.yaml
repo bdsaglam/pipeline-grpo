@@ -8,10 +8,9 @@ stages:
       --dataset-split ${train.dataset_split}
       -pl ${train.max_prompt_length}
       -cl ${train.max_completion_length}
-      -bs ${train.batch_size}
-      -g ${train.num_generations}
+      --num-generations ${train.num_generations}
+      --batch-size ${train.batch_size}
       -gacc ${train.gradient_accumulation_steps}
-      -lr ${train.learning_rate}
       --num-epochs ${train.num_epochs}
       --suffix ${train.suffix}
     deps:
@@ -27,7 +26,5 @@ stages:
       - train.batch_size
       - train.num_generations
       - train.gradient_accumulation_steps
-      - train.learning_rate
-      - train.use_vllm
       - train.num_epochs
       - train.suffix
