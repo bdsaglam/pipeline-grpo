@@ -158,6 +158,7 @@ def train(
     learning_rate: float = typer.Option(5e-6, "-lr"),
     gradient_accumulation_steps: int = typer.Option(4),
     use_vllm: bool = False,
+    vllm_gpu_memory_utilization: float = 0.8,
     flash_attn: bool = False,
     num_epochs: int = 1,
     save_steps: int = 100,
@@ -227,6 +228,7 @@ def train(
 
     training_args = GRPOConfig(
         use_vllm=use_vllm,
+        vllm_gpu_memory_utilization=vllm_gpu_memory_utilization,
         output_dir=output_dir,
         run_name=run_name,
         learning_rate=learning_rate,
