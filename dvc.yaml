@@ -1,1 +1,33 @@
 stages: 
+  train:
+    cmd: >-
+      accelerate launch --config_file config-vllm.yaml 
+      main.py train 
+      --use-vllm
+      --model ${train.model_name}
+      --dataset-split ${train.dataset_split}
+      -pl ${train.max_prompt_length}
+      -cl ${train.max_completion_length}
+      -bs ${train.batch_size}
+      -g ${train.num_generations}
+      -gacc ${train.gradient_accumulation_steps}
+      -lr ${train.learning_rate}
+      --num-epochs ${train.num_epochs}
+      --suffix ${train.suffix}
+    deps:
+      - config-vllm.yaml
+      - main.py
+    params:
+      - train.model_name
+      - train.dataset_path
+      - train.dataset_name
+      - train.dataset_split
+      - train.max_prompt_length
+      - train.max_completion_length
+      - train.batch_size
+      - train.num_generations
+      - train.gradient_accumulation_steps
+      - train.learning_rate
+      - train.use_vllm
+      - train.num_epochs
+      - train.suffix

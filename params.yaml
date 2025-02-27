@@ -1,2 +1,18 @@
 default:
-  seed: 42 
+  seed: 42
+
+train:
+  model_name: "Qwen/Qwen2.5-1.5B-Instruct"
+  dataset_path: openai/gsm8k
+  dataset_name: main
+  dataset_split: train
+  max_prompt_length: 256
+  max_completion_length: 1024
+  batch_size: 8
+  num_generations: 4
+  gradient_accumulation_steps: 4
+  learning_rate: 5e-6
+  use_vllm: true
+  num_epochs: 1
+  suffix: "-GRPO"
+

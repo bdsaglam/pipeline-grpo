@@ -6,7 +6,9 @@
 conda create -n grpo python=3.10 -y
 conda activate grpo
 pip install -r requirements.txt
-pip install flash-attn --no-build-isolation
+
+# flash-attn is not working with vLLM at the moment
+# pip install flash-attn --no-build-isolation
 ```
 
 ## Usage
