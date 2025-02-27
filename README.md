@@ -29,3 +29,10 @@ export LD_LIBRARY_PATH=/home/baris/miniconda3/envs/grpo/lib/python3.10/site-pack
 export CUDA_VISIBLE_DEVICES=0,1
 accelerate launch --config_file config-vllm.yaml main.py train --use-vllm 2>&1 | tee train-$(date +%Y-%m-%d-%H-%M-%S).log
 ```
+
+
+## Inference
+
+```
+CUDA_VISIBLE_DEVICES=0 ./run.sh "/data/local/Meta-Llama-3-8B-Instruct-GRPO-merged" 8808 8192
+```
