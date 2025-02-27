@@ -153,6 +153,8 @@ def save_artifacts(model, tokenizer, model_id: str, hub_dir: Path, publish: bool
 def train(
     model_name: str = typer.Option("Qwen/Qwen2.5-1.5B-Instruct", "--model"),
     dataset_split: str = "train",
+    max_prompt_length: int = typer.Option(256, "-pl"),
+    max_completion_length: int = typer.Option(1024, "-cl"),
     batch_size: int = typer.Option(8, "-bs"),
     num_generations: int = typer.Option(4, "-g"),
     learning_rate: float = typer.Option(5e-6, "-lr"),
@@ -229,6 +231,8 @@ def train(
     training_args = GRPOConfig(
         use_vllm=use_vllm,
         vllm_gpu_memory_utilization=vllm_gpu_memory_utilization,
+        vllm_dtype="bfloat16",
+        vllm_max_model_len=max_completion_length + max_prompt_length,
         output_dir=output_dir,
         run_name=run_name,
         learning_rate=learning_rate,
@@ -242,8 +246,8 @@ def train(
         per_device_train_batch_size=batch_size,
         gradient_accumulation_steps=gradient_accumulation_steps,
         num_generations=num_generations,
-        max_prompt_length=256,
-        max_completion_length=786,
+        max_prompt_length=max_prompt_length,
+        max_completion_length=max_completion_length,
         num_train_epochs=num_epochs,
         save_steps=save_steps,
         max_grad_norm=0.1,
