@@ -90,7 +90,7 @@ def int_reward_func(completions, **kwargs) -> list[float]:
 
 def strict_format_reward_func(completions, **kwargs) -> list[float]:
     """Reward function that checks if the completion has a specific format."""
-    pattern = r"^<think>\n.*?\n</think>\n<answer>\n.*?\n</answer>\n$"
+    pattern = r"^<think>\n.*?\n</think>\n<answer>.*?</answer>$"
     responses = [completion[0]["content"] for completion in completions]
     matches = [re.match(pattern, r, flags=re.DOTALL) for r in responses]
     return [0.5 if match else 0.0 for match in matches]
@@ -110,12 +110,12 @@ def count_xml(text) -> float:
         count += 0.125
     if text.count("\n</think>\n") == 1:
         count += 0.125
-    if text.count("\n<answer>\n") == 1:
+    if text.count("<answer>") == 1:
         count += 0.125
-        count -= len(text.split("\n</answer>\n")[-1]) * 0.001
-    if text.count("\n</answer>") == 1:
+        count -= len(text.split("<answer>")[-1]) * 0.001
+    if text.count("</answer>") == 1:
         count += 0.125
-        count -= (len(text.split("\n</answer>")[-1]) - 1) * 0.001
+        count -= (len(text.split("</answer>")[-1]) - 1) * 0.001
     return count
 
 
