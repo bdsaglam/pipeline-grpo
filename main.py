@@ -162,7 +162,7 @@ def train(
     num_epochs: int = 1,
     save_steps: int = 100,
     out: Path = typer.Option("./tmp/outputs/"),
-    hub_dir: Path = typer.Option("~/.cache/huggingface/tgi/local"),
+    hub_dir: Path = typer.Option("/home/baris/.cache/huggingface/tgi/local"),
     publish: bool = False,
     suffix: str = "-GRPO",
     run_name: Optional[str] = None,
@@ -187,7 +187,7 @@ def train(
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
 
-    hub_dir = Path(hub_dir).expanduser().resolve()
+    hub_dir = Path(hub_dir)
     hub_dir.mkdir(parents=True, exist_ok=True)
 
     # Set up logging with the provided log level
