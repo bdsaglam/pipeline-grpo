@@ -7,6 +7,7 @@ from typing import Optional
 
 import torch
 import typer
+from accelerate import Accelerator
 from datasets import Dataset, load_dataset
 from dotenv import load_dotenv
 from peft import LoraConfig
@@ -16,6 +17,10 @@ from trl import GRPOConfig, GRPOTrainer
 log = logging.getLogger(__name__)
 
 load_dotenv()
+
+app = typer.Typer()
+
+accelerator = Accelerator()
 
 # System prompt and format definitions
 SYSTEM_PROMPT = """
@@ -129,8 +134,24 @@ def clear_memory():
     gc.collect()
 
 
-def main(
-    model_name: str = "meta-llama/Meta-Llama-3-8B-Instruct",
+def save_artifacts(model, tokenizer, model_id: str, hub_dir: Path, publish: bool):
+    # Save locally
+    log.info(f"Saving model and tokenizer locally: {model_id}")
+    model.save_pretrained(hub_dir / model_id)
+    tokenizer.save_pretrained(hub_dir / model_id)
+
+    if publish:
+        try:
+            log.info(f"Pushing adapters to hub: {model_id}")
+            model.push_to_hub(model_id)
+            tokenizer.push_to_hub(model_id)
+        except Exception as e:
+            log.warning(f"Failed to push adapters to hub: {e}")
+
+
+@app.command("train")
+def train(
+    model_name: str = "Qwen/Qwen2.5-1.5B-Instruct",
     dataset_split: str = "train",
     batch_size: int = 8,
     num_generations: int = 4,
@@ -171,9 +192,6 @@ def main(
 
     # Set up logging with the provided log level
     logging.basicConfig(level=log_level)
-
-    # Setup environment
-    clear_memory()
 
     # Load dataset
     dataset = get_gsm8k_questions(split=dataset_split)
@@ -250,36 +268,22 @@ def main(
     # Start training
     trainer.train()
 
-    final_model_id = model_name.split("/", 1)[1] + suffix
+    # Save artifacts
+    if accelerator.is_main_process:
+        final_model_id = model_name.split("/", 1)[1] + suffix
+        save_artifacts(model, tokenizer, final_model_id, hub_dir, publish)
 
-    # Save locally
-    log.info(f"Saving adapters locally: {final_model_id}")
-    trainer.model.save_pretrained(hub_dir / final_model_id)
-    tokenizer.save_pretrained(hub_dir / final_model_id)
+        merged_model_id = final_model_id + "-merged"
+        merged_model = trainer.model.merge_and_unload()
+        save_artifacts(merged_model, tokenizer, merged_model_id, hub_dir, publish)
 
-    if publish:
-        try:
-            log.info(f"Pushing adapters to hub: {final_model_id}")
-            trainer.model.push_to_hub(final_model_id)
-            tokenizer.push_to_hub(final_model_id)
-        except Exception as e:
-            log.warning(f"Failed to push adapters to hub: {e}")
 
-    # Merge adapters and save
-    merged_model_id = final_model_id + "-merged"
-    log.info(f"Merging adapters and saving locally: {merged_model_id}")
-    merged_model = trainer.model.merge_and_unload()
-    merged_model.save_pretrained(hub_dir / merged_model_id)
-    tokenizer.save_pretrained(hub_dir / merged_model_id)
-
-    if publish:
-        try:
-            log.info(f"Pushing merged model to hub: {merged_model_id}")
-            merged_model.push_to_hub(hub_dir / merged_model_id)
-            tokenizer.push_to_hub(hub_dir / merged_model_id)
-        except Exception as e:
-            log.warning(f"Failed to push merged model to hub: {e}")
+@app.command("clear")
+def clear():
+    visible_devices = os.getenv("CUDA_VISIBLE_DEVICES", "All")
+    log.info(f"Clearing memory on devices: {visible_devices}")
+    clear_memory()
 
 
 if __name__ == "__main__":
-    typer.run(main)
+    app()
