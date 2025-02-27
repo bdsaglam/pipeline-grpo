@@ -5,7 +5,7 @@ downcast_bf16: 'no'
 enable_cpu_affinity: false
 gpu_ids: 0,1
 machine_rank: 0
-main_training_function: main
+main_training_function: train
 mixed_precision: bf16
 num_machines: 1
 num_processes: 1

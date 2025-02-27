@@ -151,13 +151,13 @@ def save_artifacts(model, tokenizer, model_id: str, hub_dir: Path, publish: bool
 
 @app.command("train")
 def train(
-    model_name: str = "Qwen/Qwen2.5-1.5B-Instruct",
+    model_name: str = typer.Option("Qwen/Qwen2.5-1.5B-Instruct", "--model"),
     dataset_split: str = "train",
-    batch_size: int = 8,
-    num_generations: int = 4,
+    batch_size: int = typer.Option(8, "-bs"),
+    num_generations: int = typer.Option(4, "-g"),
+    learning_rate: float = typer.Option(5e-6, "-lr"),
+    gradient_accumulation_steps: int = typer.Option(4),
     use_vllm: bool = False,
-    learning_rate: float = 5e-6,
-    gradient_accumulation_steps: int = 4,
     flash_attn: bool = False,
     num_epochs: int = 1,
     save_steps: int = 100,
