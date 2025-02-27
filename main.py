@@ -14,9 +14,9 @@ from peft import LoraConfig
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from trl import GRPOConfig, GRPOTrainer
 
-log = logging.getLogger(__name__)
-
 load_dotenv()
+
+log = logging.getLogger(__name__)
 
 app = typer.Typer()
 
