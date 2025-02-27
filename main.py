@@ -184,10 +184,10 @@ def train(
         output_dir: Directory to save model checkpoints
         run_name: Name of the run for wandb
     """
-    out = Path(out).resolve()
+    out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
 
-    hub_dir = Path(hub_dir).resolve()
+    hub_dir = Path(hub_dir).expanduser().resolve()
     hub_dir.mkdir(parents=True, exist_ok=True)
 
     # Set up logging with the provided log level
