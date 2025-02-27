@@ -26,22 +26,18 @@ accelerator = Accelerator()
 SYSTEM_PROMPT = """
 Respond in the following format:
 
-<reasoning>
+<think>
 ...
-</reasoning>
-<answer>
-...
-</answer>
-"""
+</think>
+<answer>...</answer>
+""".strip()
 
-XML_COT_FORMAT = """\
-<reasoning>
-{reasoning}
-</reasoning>
-<answer>
-{answer}
-</answer>
-"""
+XML_COT_FORMAT = """
+<think>
+{think}
+</think>
+<answer>{answer}</answer>
+""".strip()
 
 
 def extract_xml_answer(text: str) -> str:
@@ -160,7 +156,7 @@ def train(
     learning_rate: float = typer.Option(5e-6, "-lr"),
     gradient_accumulation_steps: int = typer.Option(4),
     use_vllm: bool = False,
-    vllm_gpu_memory_utilization: float = 0.8,
+    vllm_gpu_memory_utilization: float = typer.Option(0.9, "-vmu"),
     flash_attn: bool = False,
     num_epochs: int = 1,
     save_steps: int = 100,
