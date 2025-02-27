@@ -156,7 +156,7 @@ def train(
     learning_rate: float = typer.Option(5e-6, "-lr"),
     gradient_accumulation_steps: int = typer.Option(4),
     use_vllm: bool = False,
-    vllm_gpu_memory_utilization: float = typer.Option(0.9, "-vmu"),
+    vllm_gpu_memory_utilization: float = typer.Option(0.7, "-vmu"),
     flash_attn: bool = False,
     num_epochs: int = 1,
     save_steps: int = 100,
